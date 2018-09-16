@@ -1,8 +1,11 @@
 const Datastore = require('@google-cloud/datastore');
 const express = require('express');
+const bodyParser = require('body-parser')
+
 var app = express();
 
-app.use(express.bodyParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const projectId = 'YOUR_PROJECT_ID';
 const datastore = new Datastore({
@@ -13,25 +16,34 @@ app.post('/api/books', (req, res) => {
   let entity = {
     key: datastore.key('book'),
     data: {
-      title: request.body.title,
-      author: request.body.author
+      title: req.body.title,
+      author: req.body.author
     }
   };
-
   datastore
     .save(entity)
     .then(() => {
-      console.log(`Saved ${task.key.name}: ${task.data.description}`);
+      console.log(`Saved ${entity.key.name}: ${entity.data.title}`);
     })
     .catch(err => {
       console.error('ERROR:', err);
     });
 
-  res.send(book);
+  res.send(entity);
 });
 
 app.get('/api/books', (req, res) => {
-  res.send([]);
+  const query = datastore.createQuery('book');
+  datastore
+    .runQuery(query)
+    .then(results => {
+      const books = results[0]
+      res.send(books);
+    })
+    .catch(err => {
+      console.error('ERROR:', err);
+      res.send([]);
+    });
 });
 
 const server = app.listen(8080, () => {
