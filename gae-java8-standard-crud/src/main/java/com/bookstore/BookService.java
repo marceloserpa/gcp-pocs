@@ -9,24 +9,26 @@ import java.util.ArrayList;
 
 import javax.inject.Named;
 
-
+//http://localhost:8080/_ah/api/discovery/v1/apis/
 @Api(
     name = "books",
-    version = "v1",
+    version = "v1"
+    /*,
     scopes = {Constants.EMAIL_SCOPE},
     clientIds = {Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID, Constants.IOS_CLIENT_ID},
-    audiences = {Constants.ANDROID_AUDIENCE}
+    audiences = {Constants.ANDROID_AUDIENCE}*/
 )
 public class BookService {
 
   public static ArrayList<Book> books = new ArrayList<Book>();
 
   static {
-    books.add(new Book("hello world!"));
-    books.add(new Book("goodbye world!"));
+    books.add(new Book("The Shining"));
+    books.add(new Book("Under the domme"));
   }
 
-  public Book getGreeting(@Named("id") Integer id) throws NotFoundException {
+  //http://localhost:8080/_ah/api/books/v1/book/1
+  public Book getBook(@Named("id") Integer id) throws NotFoundException {
     try {
       return books.get(id);
     } catch (IndexOutOfBoundsException e) {
@@ -34,18 +36,24 @@ public class BookService {
     }
   }
 
-  public ArrayList<Book> listGreeting() {
+  //http://localhost:8080/_ah/api/books/v1/book
+  public ArrayList<Book> listBook() {
     return books;
   }
 
-  @ApiMethod(name = "greetings.multiply", httpMethod = "post")
-  public Book insertGreeting(@Named("times") Integer times, Book greeting) {
+  @ApiMethod(name = "book", httpMethod = "post")
+  public Book insertGreeting(Book book) {
+	  /**
     Book response = new Book();
     StringBuilder responseBuilder = new StringBuilder();
     for (int i = 0; i < times; i++) {
       responseBuilder.append(greeting.getMessage());
     }
     response.setMessage(responseBuilder.toString());
+    */
+	books.add(book);
+	Book response = new Book();
+	response.setMessage("ok");
     return response;
   }
 

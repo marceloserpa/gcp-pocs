@@ -9,29 +9,11 @@
 
 /** google global namespace for Google projects. */
 var google = google || {};
-
-/** devrel namespace for Google Developer Relations projects. */
 google.devrel = google.devrel || {};
-
-/** samples namespace for DevRel sample code. */
 google.devrel.samples = google.devrel.samples || {};
-
-/** hello namespace for this sample. */
 google.devrel.samples.hello = google.devrel.samples.hello || {};
-
-/**
- * Client ID of the application (from the APIs Console).
- * @type {string}
- */
-google.devrel.samples.hello.CLIENT_ID =
-    'replace this with your web client ID';
-
-/**
- * Scopes used by the application.
- * @type {string}
- */
-google.devrel.samples.hello.SCOPES =
-    'https://www.googleapis.com/auth/userinfo.email';
+google.devrel.samples.hello.CLIENT_ID ='replace this with your web client ID';
+google.devrel.samples.hello.SCOPES ='https://www.googleapis.com/auth/userinfo.email';
 
 /**
  * Whether or not the user is signed in.
@@ -106,8 +88,9 @@ google.devrel.samples.hello.getGreeting = function(id) {
 /**
  * Lists greetings via the API.
  */
-google.devrel.samples.hello.listGreeting = function() {
-  gapi.client.helloworld.greetings.listGreeting().execute(
+google.devrel.samples.hello.listBook = function() {
+  console.log(gapi.client);
+  gapi.client.helloworld.book.listGreeting().execute(
       function(resp) {
         if (!resp.code) {
           resp.items = resp.items || [];
@@ -155,7 +138,7 @@ google.devrel.samples.hello.enableButtons = function() {
   }
 
   document.getElementById('listGreeting').onclick = function() {
-    google.devrel.samples.hello.listGreeting();
+    google.devrel.samples.hello.listBook();
   }
 
   document.getElementById('multiplyGreetings').onclick = function() {
