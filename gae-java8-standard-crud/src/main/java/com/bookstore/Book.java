@@ -2,19 +2,35 @@ package com.bookstore;
 
 public class Book {
 
-  public String message;
+	public String author;
+	public String category;
+	public String title;
 
-  public Book() {};
+	public Book() {
+	}
 
-  public Book(String message) {
-    this.message = message;
-  }
+	public String getAuthor() {
+		return author;
+	}
 
-  public String getMessage() {
-    return message;
-  }
+	public void setAuthor(String author) {
+		this.author = author;
+	}
 
-  public void setMessage(String message) {
-    this.message = message;
-  }
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	};
+
 }

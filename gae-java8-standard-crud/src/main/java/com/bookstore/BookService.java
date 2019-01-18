@@ -28,27 +28,22 @@ import com.google.cloud.firestore.WriteResult;
  */
 )
 public class BookService {
-
-	public static ArrayList<Book> books = new ArrayList<Book>();
-
-	static {
-		books.add(new Book("The Shining"));
-		books.add(new Book("Under the domme"));
-	}
+	
+	private final static String PROJECT_ID = "my-project";
 
 	// http://localhost:8080/_ah/api/books/v1/book/1
 	public Book getBook(@Named("id") Integer id) throws NotFoundException {
 		try {
-			return books.get(id);
+			return new Book();
 		} catch (IndexOutOfBoundsException e) {
 			throw new NotFoundException("Greeting not found with an index: " + id);
 		}
 	}
 
 	// http://localhost:8080/_ah/api/books/v1/book
-	public ArrayList<Book> listBook() throws InterruptedException, ExecutionException {
-		FirestoreOptions firestoreOptions = FirestoreOptions.getDefaultInstance().toBuilder().setProjectId("MY-PROJECT")
-				.build();
+	public List<Book> listBook() throws InterruptedException, ExecutionException {
+		FirestoreOptions firestoreOptions = FirestoreOptions.getDefaultInstance().toBuilder()
+				.setProjectId(PROJECT_ID).build();
 		Firestore db = firestoreOptions.getService();
 
 		// asynchronously retrieve all users
@@ -57,10 +52,12 @@ public class BookService {
 		// query.get() blocks on response
 		QuerySnapshot querySnapshot = query.get();
 		List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
-		books = new ArrayList<>();
+		List<Book> books = new ArrayList<>();
 		for (QueryDocumentSnapshot document : documents) {
 			Book book = new Book();
-			book.setMessage(document.getString("author"));
+			book.setAuthor(document.getString("author"));
+			book.setTitle(document.getString("title"));
+			book.setCategory(document.getString("category"));
 			books.add(book);
 
 		}
@@ -69,19 +66,20 @@ public class BookService {
 	}
 
 	@ApiMethod(name = "book", httpMethod = "post")
-	public Book insertGreeting() throws InterruptedException, ExecutionException {
-		FirestoreOptions firestoreOptions = FirestoreOptions.getDefaultInstance().toBuilder().setProjectId("MY_PROJECT")
+	public Book insertGreeting(Book book) throws InterruptedException, ExecutionException {
+		FirestoreOptions firestoreOptions = FirestoreOptions.getDefaultInstance().toBuilder()
+				.setProjectId(PROJECT_ID)
 				.build();
 		Firestore db = firestoreOptions.getService();
-		DocumentReference docRef = db.collection("books").document("theshining");
+		DocumentReference docRef = db.collection("books").document("theshinin1g");
 		Map<String, Object> data = new HashMap<>();
-		data.put("author", "Stephen King");
-		data.put("title", "The Shining");
-		data.put("category", "Horror");
+		data.put("author", book.getAuthor());
+		data.put("title", book.getTitle());
+		data.put("category", book.getCategory());
+		
 		ApiFuture<WriteResult> result = docRef.set(data);
 		result.get();
 		Book response = new Book();
-		response.setMessage("ok");
 		return response;
 	}
 
