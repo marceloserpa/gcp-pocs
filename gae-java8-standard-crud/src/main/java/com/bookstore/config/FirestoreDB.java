@@ -5,7 +5,7 @@ import com.google.cloud.firestore.FirestoreOptions;
 
 public class FirestoreDB {
 	
-	private static final String PROJECT_ID = "my-project";
+	private static final String PROJECT_ID = System.getenv("PROJECT_ID")																																								;
 	private Firestore db;
 	
 	private FirestoreDB() {
