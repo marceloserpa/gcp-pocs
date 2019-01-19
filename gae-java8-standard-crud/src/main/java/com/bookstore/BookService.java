@@ -8,13 +8,14 @@ import java.util.concurrent.ExecutionException;
 
 import javax.inject.Named;
 
+import com.bookstore.config.FirestoreDB;
 import com.google.api.core.ApiFuture;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
@@ -32,19 +33,28 @@ public class BookService {
 	private final static String PROJECT_ID = "my-project";
 
 	// http://localhost:8080/_ah/api/books/v1/book/1
-	public Book getBook(@Named("id") Integer id) throws NotFoundException {
+	public Book getBook(@Named("id") String id) throws NotFoundException {
+		Firestore db = FirestoreDB.getInstance().getConnection();
+		DocumentReference documentRef = db.collection("books").document(id);		
+		ApiFuture<DocumentSnapshot> future = documentRef.get();				
 		try {
-			return new Book();
-		} catch (IndexOutOfBoundsException e) {
-			throw new NotFoundException("Greeting not found with an index: " + id);
+			DocumentSnapshot document = future.get();
+			if(!document.exists()) {
+				throw new NotFoundException("Greeting not found with an index: " + id);
+			}
+			Book book = new Book();
+			book.setAuthor(document.getString("author"));
+			book.setTitle(document.getString("title"));
+			book.setCategory(document.getString("category"));
+			return book;
+		} catch (InterruptedException | ExecutionException  e) {
+			throw new RuntimeException("Greeting not found with an index: " + id);
 		}
 	}
 
 	// http://localhost:8080/_ah/api/books/v1/book
 	public List<Book> listBook() throws InterruptedException, ExecutionException {
-		FirestoreOptions firestoreOptions = FirestoreOptions.getDefaultInstance().toBuilder()
-				.setProjectId(PROJECT_ID).build();
-		Firestore db = firestoreOptions.getService();
+		Firestore db = FirestoreDB.getInstance().getConnection();
 
 		// asynchronously retrieve all users
 		ApiFuture<QuerySnapshot> query = db.collection("books").get();
@@ -66,12 +76,9 @@ public class BookService {
 	}
 
 	@ApiMethod(name = "book", httpMethod = "post")
-	public Book insertGreeting(Book book) throws InterruptedException, ExecutionException {
-		FirestoreOptions firestoreOptions = FirestoreOptions.getDefaultInstance().toBuilder()
-				.setProjectId(PROJECT_ID)
-				.build();
-		Firestore db = firestoreOptions.getService();
-		DocumentReference docRef = db.collection("books").document("theshinin1g");
+	public Book insertGreeting(Book book) throws InterruptedException, ExecutionException {		
+		Firestore db = FirestoreDB.getInstance().getConnection();
+		DocumentReference docRef = db.collection("books").document(book.getTitleID());
 		Map<String, Object> data = new HashMap<>();
 		data.put("author", book.getAuthor());
 		data.put("title", book.getTitle());

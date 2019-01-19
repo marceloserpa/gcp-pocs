@@ -2,11 +2,20 @@ package com.bookstore;
 
 public class Book {
 
+	public String titleID;
 	public String author;
 	public String category;
 	public String title;
 
 	public Book() {
+	}
+		
+	public String getTitleID() {
+		return titleID;
+	}
+
+	public void setTitleID(String titleID) {
+		this.titleID = titleID;
 	}
 
 	public String getAuthor() {
